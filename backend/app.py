@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -21,9 +21,29 @@ class Meal(db.Model):
         self.carbs = carbs
         self.protein = protein
 
+def format_meal(meal):
+    return {
+        "id": meal.id,
+        "calories": meal.calories,
+        "fat": meal.fat,
+        "carbs": meal.carbs,
+        "protein": meal.protein
+    }
 @app.route('/')
 def hello():
     return "Hey!"
+
+@app.route('/meal', methods = ['POST'])
+def create_meal():
+    calories = request.json['calories']
+    fat = request.json['fat']
+    carbs = request.json['carbs']
+    protein = request.json['protein']
+    meal = Meal(calories, fat, carbs, protein)
+    db.session.add(meal)
+    db.session.commit()
+    return format_meal(meal)
+
 
 if __name__ == '__main__':
     with app.app_context():
