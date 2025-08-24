@@ -37,10 +37,19 @@ def hello():
 # Create a meal
 @app.route('/meals', methods = ['POST'])
 def create_meal():
-    calories = request.json['calories']
-    fat = request.json['fat']
-    carbs = request.json['carbs']
-    protein = request.json['protein']
+    meal_data = request.get_json()
+    calories, fat, carbs, protein = 0, 0, 0, 0
+
+    # Handling cases when not all attributes are updated
+    if 'calories' in meal_data:
+        calories = meal_data['calories']
+    if 'fat' in meal_data:
+        fat = meal_data['fat']
+    if 'carbs' in meal_data:
+        carbs = meal_data['carbs']
+    if 'protein' in meal_data:
+        protein = meal_data['protein']
+
     meal = Meal(calories, fat, carbs, protein)
     db.session.add(meal)
     db.session.commit()
@@ -71,8 +80,25 @@ def delete_meal(meal_id):
     db.session.commit()
     return f'Meal id: {meal_id}, deleted!'
 
+# Update a meal
+@app.route('/meals/<meal_id>', methods = ['PUT'])
+def update_meal(meal_id):
+    meal = Meal.query.filter_by(id=meal_id) # not `one` because `update` would not work
+    meal_data = request.get_json()
+
+    # Handling cases when not all attributes are updated
+    if 'calories' in meal_data:
+        meal.update(dict(calories=meal_data['calories']))
+    if 'fat' in meal_data:
+        meal.update(dict(fat=meal_data['fat']))
+    if 'carbs' in meal_data:
+        meal.update(dict(carbs=meal_data['carbs']))
+    if 'protein' in meal_data:
+        meal.update(dict(protein=meal_data['protein']))
+
+    db.session.commit()
+    return {'meal': format_meal(meal.one())}
+
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run(debug=True)
 
