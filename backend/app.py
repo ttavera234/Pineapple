@@ -29,6 +29,7 @@ def format_meal(meal):
         "carbs": meal.carbs,
         "protein": meal.protein
     }
+
 @app.route('/')
 def hello():
     return "Hey!"
@@ -61,6 +62,14 @@ def get_meal(meal_id):
     meal = Meal.query.filter_by(id=meal_id).one() # Do not need `first` here since there will be no duplicate ids
     formatted_meal = format_meal(meal)
     return {'meal': formatted_meal}
+
+# Delete a meal
+@app.route('/meals/<meal_id>', methods = ['DELETE'])
+def delete_meal(meal_id):
+    meal = Meal.query.filter_by(id=meal_id).one()
+    db.session.delete(meal)
+    db.session.commit()
+    return f'Meal id: {meal_id}, deleted!'
 
 if __name__ == '__main__':
     with app.app_context():
