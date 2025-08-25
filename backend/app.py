@@ -40,7 +40,7 @@ def create_meal():
     meal_data = request.get_json()
     calories, fat, carbs, protein = 0, 0, 0, 0
 
-    # Handling cases when not all attributes are updated
+    # Handling cases when not all attributes are specified
     if 'calories' in meal_data:
         calories = meal_data['calories']
     if 'fat' in meal_data:
