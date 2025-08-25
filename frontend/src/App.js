@@ -58,65 +58,48 @@ function App() {
   const handleSubmit = async (e) => {
       e.preventDefault();
       try {
-          if (editCalories) {
-              const data = await axios.put(`${baseUrl}/meals/${mealId}`, {calories: editCalories});
+          // Check if we are editing a value (mealID already has a value)
+          if (mealId) {
+              const updatedData = {
+                  calories: Number(editCalories) || 0,
+                  fat: Number(editFat) || 0,
+                  carbs: Number(editCarbs) || 0,
+                  protein: Number(editProtein) || 0
+              };
+
+              const data = await axios.put(`${baseUrl}/meals/${mealId}`, updatedData);
               const updatedMeal = data.data.meal;
+
               const updatedList = mealList.map(meal => {
                   if (meal.id === mealId) {
-                      return meal = updatedMeal
+                      return updatedMeal;
                   }
-                  return meal
-              })
-              setMealList(updatedList)
-          } if (editFat) {
-            const data = await axios.put(`${baseUrl}/meals/${mealId}`, {fat: editFat});
-            const updatedMeal = data.data.meal;
-            const updatedList = mealList.map(meal => {
-                if (meal.id === mealId) {
-                    return meal = updatedMeal
-                }
-                return meal
-            })
-            setMealList(updatedList)
-          } if (editCarbs) {
-            const data = await axios.put(`${baseUrl}/meals/${mealId}`, {carbs: editCarbs});
-            const updatedMeal = data.data.meal;
-            const updatedList = mealList.map(meal => {
-                if (meal.id === mealId) {
-                    return meal = updatedMeal
-                }
-                return meal
-            })
-            setMealList(updatedList)
-          } if (editProtein) {
-            const data = await axios.put(`${baseUrl}/meals/${mealId}`, {protein: editProtein});
-            const updatedMeal = data.data.meal;
-            const updatedList = mealList.map(meal => {
-                if (meal.id === mealId) {
-                    return meal = updatedMeal
-                }
-                return meal
-            })
-            setMealList(updatedList)
+                  return meal;
+              });
+              setMealList(updatedList);
+
           } else {
+              // Logic for CREATING a new meal
               const data = await axios.post(`${baseUrl}/meals`, {
                   calories: Number(calories) || 0,
                   fat: Number(fat) || 0,
                   carbs: Number(carbs) || 0,
                   protein: Number(protein) || 0
-              })
-
+              });
               setMealList([...mealList, data.data]);
           }
+
+          // Reset all fields
           setCalories('');
-          setEditCalories('');
           setFat('');
-          setEditFat('');
           setCarbs('');
-          setEditCarbs('');
           setProtein('');
+          setEditCalories('');
+          setEditFat('');
+          setEditCarbs('');
           setEditProtein('');
           setMealId(null);
+
       } catch (err) {
           console.error(err.message)
       }
@@ -192,8 +175,8 @@ function App() {
                 {mealList.map(meal => {
                     if (mealId === meal.id) {
                         return (
-                            <li>
-                                <form onSubmit={handleSubmit} key={meal.id}>
+                            <li key={meal.id}>
+                                <form onSubmit={handleSubmit}>
                                     <input
                                         onChange={(e) => handleCalories(e, 'edit')}
                                         type="number"
