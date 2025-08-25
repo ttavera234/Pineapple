@@ -1,11 +1,22 @@
-from flask import Flask, request
+from flask import Flask, request, Blueprint, render_template
+from . import db
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:coqki2-civped-fenjAg@localhost:5432/pineapple'
-db = SQLAlchemy(app)
-CORS(app)
+main = Blueprint('main', __name__)
+
+@main.route('/')
+def index():
+    return render_template('index.html')
+
+@main.route('/profile')
+def profile():
+    return render_template('profile.html')
+
+#app = Flask(__name__)
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:coqki2-civped-fenjAg@localhost:5432/pineapple'
+#db = SQLAlchemy(app)
+#CORS(app)
 
 class Meal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -32,12 +43,8 @@ def format_meal(meal):
         "protein": meal.protein
     }
 
-@app.route('/')
-def hello():
-    return "Hey!"
-
 # Create a meal
-@app.route('/meals', methods = ['POST'])
+@main.route('/meals', methods = ['POST'])
 def create_meal():
     meal_data = request.get_json()
     calories, fat, carbs, protein = 0, 0, 0, 0
@@ -58,7 +65,7 @@ def create_meal():
     return format_meal(meal)
 
 # Get all meals
-@app.route('/meals', methods = ['GET'])
+@main.route('/meals', methods = ['GET'])
 def get_events():
     meals = Meal.query.order_by(Meal.id.asc()).all()
     meal_list = []
@@ -68,14 +75,14 @@ def get_events():
     return {'meals': meal_list}
 
 # Get a single meal
-@app.route('/meals/<meal_id>', methods = ['GET'])
+@main.route('/meals/<meal_id>', methods = ['GET'])
 def get_meal(meal_id):
     meal = Meal.query.filter_by(id=meal_id).one() # Do not need `first` here since there will be no duplicate ids
     formatted_meal = format_meal(meal)
     return {'meal': formatted_meal}
 
 # Delete a meal
-@app.route('/meals/<meal_id>', methods = ['DELETE'])
+@main.route('/meals/<meal_id>', methods = ['DELETE'])
 def delete_meal(meal_id):
     meal = Meal.query.filter_by(id=meal_id).one()
     db.session.delete(meal)
@@ -83,7 +90,7 @@ def delete_meal(meal_id):
     return f'Meal id: {meal_id}, deleted!'
 
 # Update a meal
-@app.route('/meals/<meal_id>', methods = ['PUT'])
+@main.route('/meals/<meal_id>', methods = ['PUT'])
 def update_meal(meal_id):
     meal = Meal.query.filter_by(id=meal_id) # not `one` because `update` would not work
     meal_data = request.get_json()
@@ -101,6 +108,6 @@ def update_meal(meal_id):
     db.session.commit()
     return {'meal': format_meal(meal.one())}
 
-if __name__ == '__main__':
-    app.run(debug=True)
+#if __name__ == '__main__':
+    #main.run(debug=True)
 
