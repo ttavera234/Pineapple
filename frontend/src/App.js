@@ -37,7 +37,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <form>
+        <form onSubmit={handleSubmit}>
             <label htmlFor="calories">Calories</label>
             <input
                 onChange={handleCalories}
@@ -70,6 +70,7 @@ function App() {
                 id="protein"
                 value={protein}
             />
+            <button type="submit">Submit</button>
         </form>
       </header>
     </div>
