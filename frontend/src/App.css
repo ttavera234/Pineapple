@@ -1,15 +1,28 @@
 .App {
-  text-align: center;
+    /* Activate Flexbox, and center info */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+section {
+    /* Improves readability */
+    max-width: 500px;
+    width: 100%;
+    margin-bottom: 2rem;
 }
 
 input, button {
     display: block;
     margin: 8px 0;
+}
+
+/*
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -41,3 +54,5 @@ input, button {
     transform: rotate(360deg);
   }
 }
+
+*/

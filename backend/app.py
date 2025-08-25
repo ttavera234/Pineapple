@@ -1,9 +1,11 @@
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:coqki2-civped-fenjAg@localhost:5432/pineapple'
 db = SQLAlchemy(app)
+CORS(app)
 
 class Meal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
