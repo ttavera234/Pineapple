@@ -6,24 +6,24 @@ import './App.css';
 const baseUrl = "http://127.0.0.1:5000"
 
 function App() {
-  const [calories, setCalories] = useState(0);
+  const [calories, setCalories] = useState('');
   const handleCalories = e => {
-      setCalories(Number(e.target.value));
+      setCalories(e.target.value);
   }
 
-  const [fat, setFat] = useState(0);
+  const [fat, setFat] = useState('');
   const handleFat = e => {
-      setFat(Number(e.target.value));
+      setFat(e.target.value);
   }
 
-  const [carbs, setCarbs] = useState(0);
+  const [carbs, setCarbs] = useState('');
   const handleCarbs = e => {
-      setCarbs(Number(e.target.value));
+      setCarbs(e.target.value);
   }
 
-  const [protein, setProtein] = useState(0);
+  const [protein, setProtein] = useState('');
   const handleProtein = e => {
-      setProtein(Number(e.target.value));
+      setProtein(e.target.value);
   }
 
   const [mealList, setMealList] = useState([]);
@@ -36,12 +36,18 @@ function App() {
   const handleSubmit = async (e) => {
       e.preventDefault();
       try {
-        const data = await axios.post(`${baseUrl}/meals`, {calories, fat, carbs, protein})
+        const data = await axios.post(`${baseUrl}/meals`, {
+            calories: Number(calories) || 0,
+            fat: Number(fat) || 0,
+            carbs: Number(carbs) || 0,
+            protein: Number(protein) || 0
+        })
+
         setMealList([...mealList, data.data]);
-        setCalories(0);
-        setFat(0);
-        setCarbs(0);
-        setProtein(0);
+        setCalories('');
+        setFat('');
+        setCarbs('');
+        setProtein('');
       } catch (err) {
           console.log(err.message)
       }
