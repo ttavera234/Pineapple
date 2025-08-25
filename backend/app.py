@@ -60,7 +60,7 @@ def create_meal():
 # Get all meals
 @app.route('/meals', methods = ['GET'])
 def get_events():
-    meals = Meal.query.order_by(Meal.id.asc()).all()
+    meals = Meal.query.order_by(Meal.created_at.asc()).all()
     meal_list = []
     for meal in meals:
         meal_list.append(format_meal(meal))

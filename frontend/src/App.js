@@ -7,23 +7,43 @@ const baseUrl = "http://127.0.0.1:5000"
 
 function App() {
   const [calories, setCalories] = useState('');
-  const handleCalories = e => {
-      setCalories(e.target.value);
+  const [editCalories, setEditCalories] = useState('');
+  const handleCalories = (e, field) => {
+      if (field === 'edit') {
+          setEditCalories(e.target.value)
+      } else {
+          setCalories(e.target.value);
+      }
   }
 
   const [fat, setFat] = useState('');
-  const handleFat = e => {
-      setFat(e.target.value);
+  const [editFat, setEditFat] = useState('');
+  const handleFat = (e, field) => {
+      if (field === 'edit') {
+          setEditFat(e.target.value)
+      } else {
+          setFat(e.target.value);
+      }
   }
 
   const [carbs, setCarbs] = useState('');
-  const handleCarbs = e => {
-      setCarbs(e.target.value);
+  const [editCarbs, setEditCarbs] = useState('');
+  const handleCarbs = (e, field) => {
+      if (field === 'edit') {
+          setEditCarbs(e.target.value)
+      } else {
+          setCarbs(e.target.value);
+      }
   }
 
   const [protein, setProtein] = useState('');
-  const handleProtein = e => {
-      setProtein(e.target.value);
+  const [editProtein, setEditProtein] = useState('');
+  const handleProtein = (e, field) => {
+      if (field === 'edit') {
+          setEditProtein(e.target.value)
+      } else {
+          setProtein(e.target.value);
+      }
   }
 
   const [mealList, setMealList] = useState([]);
@@ -38,20 +58,67 @@ function App() {
   const handleSubmit = async (e) => {
       e.preventDefault();
       try {
-        const data = await axios.post(`${baseUrl}/meals`, {
-            calories: Number(calories) || 0,
-            fat: Number(fat) || 0,
-            carbs: Number(carbs) || 0,
-            protein: Number(protein) || 0
-        })
+          if (editCalories) {
+              const data = await axios.put(`${baseUrl}/meals/${mealId}`, {calories: editCalories});
+              const updatedMeal = data.data.meal;
+              const updatedList = mealList.map(meal => {
+                  if (meal.id === mealId) {
+                      return meal = updatedMeal
+                  }
+                  return meal
+              })
+              setMealList(updatedList)
+          } if (editFat) {
+            const data = await axios.put(`${baseUrl}/meals/${mealId}`, {fat: editFat});
+            const updatedMeal = data.data.meal;
+            const updatedList = mealList.map(meal => {
+                if (meal.id === mealId) {
+                    return meal = updatedMeal
+                }
+                return meal
+            })
+            setMealList(updatedList)
+          } if (editCarbs) {
+            const data = await axios.put(`${baseUrl}/meals/${mealId}`, {carbs: editCarbs});
+            const updatedMeal = data.data.meal;
+            const updatedList = mealList.map(meal => {
+                if (meal.id === mealId) {
+                    return meal = updatedMeal
+                }
+                return meal
+            })
+            setMealList(updatedList)
+          } if (editProtein) {
+            const data = await axios.put(`${baseUrl}/meals/${mealId}`, {protein: editProtein});
+            const updatedMeal = data.data.meal;
+            const updatedList = mealList.map(meal => {
+                if (meal.id === mealId) {
+                    return meal = updatedMeal
+                }
+                return meal
+            })
+            setMealList(updatedList)
+          } else {
+              const data = await axios.post(`${baseUrl}/meals`, {
+                  calories: Number(calories) || 0,
+                  fat: Number(fat) || 0,
+                  carbs: Number(carbs) || 0,
+                  protein: Number(protein) || 0
+              })
 
-        setMealList([...mealList, data.data]);
-        setCalories('');
-        setFat('');
-        setCarbs('');
-        setProtein('');
+              setMealList([...mealList, data.data]);
+          }
+          setCalories('');
+          setEditCalories('');
+          setFat('');
+          setEditFat('');
+          setCarbs('');
+          setEditCarbs('');
+          setProtein('');
+          setEditProtein('');
+          setMealId(null);
       } catch (err) {
-          console.log(err.message)
+          console.error(err.message)
       }
   }
 
@@ -65,6 +132,14 @@ function App() {
       }
   }
 
+  const toggleEdit = (meal) => {
+      setMealId(meal.id);
+      setEditCalories(meal.calories)
+      setEditFat(meal.fat)
+      setEditCarbs(meal.carbs)
+      setEditProtein(meal.protein)
+  }
+
   useEffect(() => {
       fetchMeals();
   }, []);
@@ -75,34 +150,38 @@ function App() {
             <form onSubmit={handleSubmit}>
                 <label htmlFor="calories">Calories</label>
                 <input
-                    onChange={handleCalories}
+                    onChange={(e) => handleCalories(e, 'calories')}
                     type="number"
                     name="calories"
                     id="calories"
+                    placeholder="Number of calories"
                     value={calories}
                 />
                 <label htmlFor="fat">Fat</label>
                 <input
-                    onChange={handleFat}
+                    onChange={(e) => handleFat(e, 'fat')}
                     type="number"
                     name="fat"
                     id="fat"
+                    placeholder="Grams of fat"
                     value={fat}
                 />
                 <label htmlFor="carbs">Carbs</label>
                 <input
-                    onChange={handleCarbs}
+                    onChange={(e) => handleCarbs(e, 'carbs')}
                     type="number"
                     name="carbs"
                     id="carbs"
+                    placeholder="Grams of carbs"
                     value={carbs}
                 />
                 <label htmlFor="protein">Protein</label>
                 <input
-                    onChange={handleProtein}
+                    onChange={(e) => handleProtein(e, 'protein')}
                     type="number"
                     name="protein"
                     id="protein"
+                    placeholder="Grams of protein"
                     value={protein}
                 />
                 <button type="submit">Submit</button>
@@ -111,15 +190,54 @@ function App() {
         <section>
             <ul>
                 {mealList.map(meal => {
-                    return (
+                    if (mealId === meal.id) {
+                        return (
+                            <li>
+                                <form onSubmit={handleSubmit} key={meal.id}>
+                                    <input
+                                        onChange={(e) => handleCalories(e, 'edit')}
+                                        type="number"
+                                        name="editCalories"
+                                        id="editCalories"
+                                        value={editCalories}
+                                    />
+                                    <input
+                                        onChange={(e) => handleFat(e, 'edit')}
+                                        type="number"
+                                        name="editFat"
+                                        id="editFat"
+                                        value={editFat}
+                                    />
+                                    <input
+                                        onChange={(e) => handleCarbs(e, 'edit')}
+                                        type="number"
+                                        name="editCarbs"
+                                        id="editCarbs"
+                                        value={editCarbs}
+                                    />
+                                    <input
+                                        onChange={(e) => handleProtein(e, 'edit')}
+                                        type="number"
+                                        name="editProtein"
+                                        id="editProtein"
+                                        value={editProtein}
+                                    />
+                                    <button type="submit">Submit</button>
+                                </form>
+                            </li>
+                        )
+                    } else {
+                        return (
                         <li key={meal.id}>
                             Calories: {meal.calories},
                             Fat: {meal.fat},
                             Carbs: {meal.carbs},
                             Protein: {meal.protein}
+                            <button onClick={() => toggleEdit(meal)}>Edit</button>
                             <button onClick={() => handleDelete(meal.id)}>X</button>
                         </li>
                     )
+                    }
                 })}
             </ul>
         </section>
