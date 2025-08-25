@@ -1,5 +1,6 @@
 .App {
     /* Activate Flexbox, and center info */
+    background-color: cadetblue;
     display: flex;
     flex-direction: column;
     align-items: center;

@@ -33,6 +33,8 @@ function App() {
       setMealList(meals);
   }
 
+  const [mealId, setMealId] = useState(null);
+
   const handleSubmit = async (e) => {
       e.preventDefault();
       try {
@@ -50,6 +52,16 @@ function App() {
         setProtein('');
       } catch (err) {
           console.log(err.message)
+      }
+  }
+
+  const handleDelete = async (id) => {
+      try {
+          await axios.delete(`${baseUrl}/meals/${id}`)
+          const updatedList = mealList.filter(meal => meal.id !== id)
+          setMealList(updatedList);
+      } catch (err) {
+          console.error(err.message)
       }
   }
 
@@ -105,6 +117,7 @@ function App() {
                             Fat: {meal.fat},
                             Carbs: {meal.carbs},
                             Protein: {meal.protein}
+                            <button onClick={() => handleDelete(meal.id)}>X</button>
                         </li>
                     )
                 })}
