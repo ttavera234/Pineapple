@@ -1,4 +1,5 @@
 from flask import Flask, request, Blueprint, render_template
+from flask_login import login_required, current_user
 from . import db
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -10,8 +11,9 @@ def index():
     return render_template('index.html')
 
 @main.route('/profile')
+@login_required
 def profile():
-    return render_template('profile.html')
+    return render_template('profile.html', name=current_user.name)
 
 #app = Flask(__name__)
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:coqki2-civped-fenjAg@localhost:5432/pineapple'
