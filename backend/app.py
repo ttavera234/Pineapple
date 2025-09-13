@@ -1,11 +1,19 @@
 from flask import Flask
 from flask_cors import CORS
+
 from routes.api import api
+from models.data import db
 
-app = Flask(__name__)
-app.register_blueprint(api, url_prefix='/api')
+def create_app():
+    app = Flask(__name__)
 
-CORS(app)
+    db.init_app(app)
+    CORS(app)
+
+    # Blueprint for basic api routes
+    app.register_blueprint(api, url_prefix='/api')
+
+    return app
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    create_app().run(debug=True)
